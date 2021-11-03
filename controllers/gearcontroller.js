@@ -1,10 +1,20 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { Router, query } = require("express");
-const { Gear } = require("../models");
+const { Gear, User } = require("../models");
 const validateSession = require("../middleware/validate-session");
 
 const router = Router();
+
+/*GET ALL Gear by User Logged in*/
+router.get("/mine", validateSession, function (req, res) {
+	Gear.findAll({
+		where: { userId: req.user.id },
+		include: { model: User },
+	})
+		.then((post) => res.status(200).json(post))
+		.catch((err) => res.status(500).json({ error: err }));
+});
 
 /*CREATE GEAR*/
 router.post("/create", validateSession, function (req, res) {
@@ -32,8 +42,8 @@ router.put("/update/:entryId", validateSession, function (req, res) {
 });
 
 /*DELETE Create*/
-router.delete("/delete/:id", validateSession, function (req, res) {
-	const query = { where: { id: req.params.id, userId: req.user.id } };
+router.delete("/delete/:entryId", validateSession, function (req, res) {
+	const query = { where: { id: req.params.entryId, userId: req.user.id } };
 	Gear.destroy(query)
 		.then((gear) =>
 			res.status(200).json({ message: "The Post has been DESTROYED!!!!" })
