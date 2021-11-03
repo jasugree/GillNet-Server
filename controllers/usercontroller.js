@@ -6,6 +6,7 @@ const validateSession = require("../middleware/validate-session");
 
 const router = Router();
 
+/* Create user */
 router.post("/create", function (req, res) {
 	User.create({
 		userName: req.body.userName,
@@ -34,6 +35,7 @@ router.post("/create", function (req, res) {
 		});
 });
 
+/* LOGIN as existing user */
 router.post("/login", function (req, res) {
 	User.findOne({
 		where: {
@@ -68,6 +70,46 @@ router.post("/login", function (req, res) {
 				res.status(500).json({ error: "User does not exist" });
 			}
 		})
+		.catch((err) => res.status(500).json({ error: err }));
+});
+
+/*Admin ability to DELETE any User*/
+router.delete("/admindelete/:id", validateSession, function (req, res) {
+	let query;
+	if (req.user.admin === true) {
+		query = { where: { id: req.params.id } };
+	} else {
+		query = { where: { id: req.params.id, owner: req.user.id } };
+	}
+	User.destroy(query)
+		.then((user) => {
+			if (user !== 0) {
+				res.status(200).json({ message: "This User has been DESTROYED!!!!" });
+			} else {
+				res.status(200).json({ message: "This User doesn't exists" });
+			}
+		})
+		.catch((err) => res.status(500).json({ error: err }));
+});
+
+/* User can edit own profile */
+router.put("/updateprofile", validateSession, function (req, res) {
+	const updateProfile = {
+		profileImage: req.body.profileImage,
+		firstName: req.body.firstName,
+		lastName: req.body.lastName,
+		email: req.body.email,
+		description: req.body.description,
+		age: req.body.age,
+		city: req.body.city,
+		state: req.body.state,
+		admin: req.body.admin,
+	};
+	const query = { where: { id: req.user.id } };
+	User.update(updateProfile, query)
+		.then((users) =>
+			res.status(200).json({ message: "This user's info has been upated" })
+		)
 		.catch((err) => res.status(500).json({ error: err }));
 });
 
