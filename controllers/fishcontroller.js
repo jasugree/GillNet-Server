@@ -39,7 +39,16 @@ router.post("/create", validateSession, function (req, res) {
 		userId: req.user.id,
 	};
 	Fish.create(fishPost)
-		.then((fish) => res.status(200).json(fish))
+		.then((fish) =>
+			res.status(200).json({
+				...fish.dataValues,
+				user: {
+					userName: req.user.userName,
+					profileImage: req.user.profileImage,
+					id: req.user.id,
+				},
+			})
+		)
 		.catch((err) => res.status(500).json({ error: err }));
 });
 
@@ -52,11 +61,25 @@ router.put("/update/:entryId", validateSession, function (req, res) {
 		catchAndRelease: req.body.catchAndRelease,
 		caption: req.body.caption,
 	};
-	const query = { where: { id: req.params.entryId, userId: req.user.id } };
-	Fish.update(fishPost, query)
-		.then((fishes) =>
-			res.status(200).json({ message: "The Post has been updated." })
-		)
+	const query = {
+		where: { id: req.params.entryId, userId: req.user.id },
+		returning: true,
+	};
+	Fish.update(fishPost, {
+		where: { id: req.params.entryId, userId: req.user.id },
+		returning: true,
+	})
+		.then((response) => {
+			console.log(response);
+			res.status(200).json({
+				...response[1][0].dataValues,
+				user: {
+					userName: req.user.userName,
+					profileImage: req.user.profileImage,
+					id: req.user.id,
+				},
+			});
+		})
 		.catch((err) => res.status(500).json({ error: err }));
 });
 

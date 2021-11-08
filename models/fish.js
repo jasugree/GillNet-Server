@@ -31,6 +31,7 @@ Fish.init(
 		catchAndRelease: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
+			defaultValue: false,
 		},
 		caption: {
 			type: DataTypes.STRING,

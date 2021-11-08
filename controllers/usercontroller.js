@@ -43,6 +43,7 @@ router.post("/login", function (req, res) {
 		},
 	})
 		.then(function loginSuccess(user) {
+			console.log(user);
 			if (user) {
 				bcrypt.compare(
 					req.body.passwordhash,
