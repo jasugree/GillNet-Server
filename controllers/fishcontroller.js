@@ -17,7 +17,12 @@ router.get("/", validateSession, function (req, res) {
 				user.fishes.forEach((f) =>
 					fish.push({
 						...f.dataValues,
-						user: { userName: user.userName, profileImage: user.profileImage },
+						user: {
+							userName: user.userName,
+							profileImage: user.profileImage,
+							city: user.city,
+							state: user.state,
+						},
 					})
 				);
 			});

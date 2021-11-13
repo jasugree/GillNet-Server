@@ -1,10 +1,19 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { Router } = require("express");
-const { User } = require("../models");
+const { User, Fish } = require("../models");
 const validateSession = require("../middleware/validate-session");
 
 const router = Router();
+
+/*GET all Users */
+router.get("/", function (req, res) {
+	User.findAll({
+		include: { model: Fish },
+	})
+		.then((users) => res.status(200).json(users))
+		.catch((err) => res.status(500).json({ error: err }));
+});
 
 /* Create user */
 router.post("/create", function (req, res) {
@@ -112,6 +121,11 @@ router.put("/updateprofile", validateSession, function (req, res) {
 			res.status(200).json({ message: "This user's info has been upated" })
 		)
 		.catch((err) => res.status(500).json({ error: err }));
+});
+
+/*AUTHORIZE USER*/
+router.get("/authorize", validateSession, function (req, res) {
+	res.status(200).json({ user: req.user });
 });
 
 module.exports = router;
