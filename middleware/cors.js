@@ -9,6 +9,7 @@ const CorsMiddleware = (req, res, next) => {
 		"access-control-allow-headers",
 		"Origin, X-Requested-With, Content-Type, Accept, Authorization"
 	);
+	res.header("Access-Control-Allow-Methods", "*,PUT");
 	return next();
 };
 
