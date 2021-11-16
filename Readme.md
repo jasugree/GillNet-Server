@@ -1,5 +1,7 @@
 ## Getting started locally
 
+![screenshot](./assets/gillnet-readme.png)
+
 1. `npm install`
 1. Create your DB in PGAdmin with a name
 1. Create a `.env` file
